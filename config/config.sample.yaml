@@ -1,0 +1,15 @@
+site: 
+  base: http://localhost:8080
+  title: Blog Title
+  owner: Your Name
+links:
+  - title: Privacy Policy
+    url: /privacy-policy
+    template: privacy.html.twig
+  - title: Terms of Use
+    url: /terms-of-use
+    template: terms.html.twig
+  - title: Disclaimer
+    url: /disclaimer
+    template: disclaimer.html.twig
+
