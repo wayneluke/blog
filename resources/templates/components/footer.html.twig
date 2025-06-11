@@ -1,0 +1,7 @@
+<footer>
+    <p>&copy; Wayne Luke. |&nbsp;
+        {% for link in links %}
+            <a class="no-underline" href="{{ link.url }}">{{ link.title }}</a>&nbsp;|&nbsp;
+        {% endfor %}
+    </p>
+</footer>

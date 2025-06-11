@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link href="/css/styles.css" rel="stylesheet">
+   <base href="{{ site.base }}">
+   <title>{{ site.title }}</title>
+</head>
+<body>
+{{ include('components/header.html.twig') }}
+    
+    <main class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4 sm:gap-y-8">
+    {% for item in items %}
+        <div>
+            <a class="no-underline" href="/item/{{ item.slug }}"><img src="/images/posts/{{ item.image }}" class="rounded-lg">
+            <b>{{ item.title }}</b></a>
+            {{ item.publishDate|format_datetime('medium','none') }}
+        </div>
+    {% endfor %}
+    </main>
+    
+{{ include('components/footer.html.twig') }}
+</body>
+</html>

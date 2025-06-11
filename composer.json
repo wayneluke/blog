@@ -1,0 +1,16 @@
+{
+    "require": {
+        "mnapoli/front-yaml": "^2.0",
+        "michelf/php-markdown": "^2.0",
+        "php-di/php-di": "^7.0",
+        "slim/psr7": "^1.7",
+        "slim/slim": "^4.14",
+        "slim/twig-view": "^3.4",
+        "twig/intl-extra": "^3.21"
+    },
+    "autoload": {
+        "psr-4": {
+            "MarkdownBlog\\": "src/Blog"
+        }
+    }
+}
