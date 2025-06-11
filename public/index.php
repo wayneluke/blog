@@ -68,6 +68,7 @@ $app->map(['GET'], '/item/{slug}', function (Request $request, Response $respons
     );
 });
 
+/*
 $app->map(['GET'], '/privacy-policy', function (Request $request, Response $response, array $args) {
     global $config;
     $view = $this->get('view');
@@ -75,8 +76,30 @@ $app->map(['GET'], '/privacy-policy', function (Request $request, Response $resp
     return $view->render(
         $response,
         'privacy.html.twig',
-        ['site' => $config['site'],]
+        ['site' => $config['site'],
+        'links' => $config['links'],]
     );
 });
+*/
+
+// Register routes based on config
+if (isset($config['links']) && is_array($config['links'])) {
+    foreach ($config['links'] as $link) {
+        $title = $link['title'] ?? 'Untitled';
+        $url = $link['url'] ?? '';
+        $template = $link['template'] ?? null;
+
+        // Register only internal routes with a valid Twig template
+        if (!preg_match('/^https?:\/\//i', $url) && !empty($template)) {
+            $app->map(['GET'], $url, function (Request $request, Response $response) use ($template, $title) {
+                $view = $this->get('view');
+                return $view->render($response, $template, [
+                    'title' => $title,
+                ]);
+            });
+        }
+    }
+}
+
 
 $app->run();
