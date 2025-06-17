@@ -17,7 +17,50 @@ use Twig\Extra\Intl\IntlExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$config = Yaml::parseFile('../config/config.yaml');
+/***
+* @implements ArrayAccess<mixed,mixed>
+***/
+
+final class ImmutableConfig implements ArrayAccess
+{
+    private array $data;
+
+    /***
+    * @param $data
+    ***/
+    
+    public function __construct(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset): mixed
+    {
+        return $this->data[$offset] ?? null;
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        throw new LogicException("Cannot modify immutable config.");
+    }
+
+    public function offsetUnset($offset): void
+    {
+        throw new LogicException("Cannot unset immutable config.");
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
+    }
+}
+
+$config = new ImmutableConfig(Yaml::parseFile('../config/config.yaml'));
 
 $container = new Container();
 $container->set('view', function($c) {
@@ -37,11 +80,12 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->add(TwigMiddleware::createFromContainer($app));
 
-$app->map(['GET'], '/', function (Request $request, Response $response, array $args) {
-    global $config;
-    $view = $this->get('view');
-    /** @var ContentAggregatorInterface $contentAggregator */
-    $contentAggregator = $this->get(ContentAggregatorInterface::class);
+
+// Build Home Page.
+$app->map(['GET'], '/', function (Request $request, Response $response, array $args) use ($app, $config) {
+    $container = $app->getContainer();
+    $view = $container->get('view');
+    $contentAggregator = $container->get(ContentAggregatorInterface::class);
     $sorter = new \MarkdownBlog\Sorter\SortByReverseDateOrder();
     $items = $contentAggregator->getItems();
     usort($items, $sorter);
@@ -51,38 +95,24 @@ $app->map(['GET'], '/', function (Request $request, Response $response, array $a
     return $view->render(
         $response,
         'index.html.twig',
-        ['site' => $config['site'],
-        'links' => $config['links'],
-        'items' => $iterator]
+        ['site' => $config['site'],'links' => $config['links'],'items' => $iterator]
     );
 });
 
-$app->map(['GET'], '/item/{slug}', function (Request $request, Response $response, array $args) {
-    $view = $this->get('view');
-    /** @var ContentAggregatorInterface $contentAggregator */
-    $contentAggregator = $this->get(ContentAggregatorInterface::class);
+// Show individual blog entry.
+$app->map(['GET'], '/post/{slug}', function (Request $request, Response $response, array $args) use ($app, $config) {
+    $container = $app->getContainer();
+    $view = $container->get('view');
+    $contentAggregator = $container->get(ContentAggregatorInterface::class);
     return $view->render(
         $response,
         'view.html.twig',
-        ['site' => $config['site'],'item' => $contentAggregator->findItemBySlug($args['slug'])]
+        ['site' => $config['site'],'links' => $config['links'],'item' => $contentAggregator->findItemBySlug($args['slug'])]
     );
 });
 
-/*
-$app->map(['GET'], '/privacy-policy', function (Request $request, Response $response, array $args) {
-    global $config;
-    $view = $this->get('view');
 
-    return $view->render(
-        $response,
-        'privacy.html.twig',
-        ['site' => $config['site'],
-        'links' => $config['links'],]
-    );
-});
-*/
-
-// Register routes based on config
+// Register routes based on $config['links'].
 if (isset($config['links']) && is_array($config['links'])) {
     foreach ($config['links'] as $link) {
         $title = $link['title'] ?? 'Untitled';
@@ -91,14 +121,22 @@ if (isset($config['links']) && is_array($config['links'])) {
 
         // Register only internal routes with a valid Twig template
         if (!preg_match('/^https?:\/\//i', $url) && !empty($template)) {
-            $app->map(['GET'], $url, function (Request $request, Response $response) use ($template, $title) {
-                $view = $this->get('view');
+            $app->map(['GET'], $url, function (Request $request, Response $response) use ($app, $template, $title) {
+                $container = $app->getContainer();
+                $view = $container->get('view');
                 return $view->render($response, $template, [
                     'title' => $title,
                 ]);
             });
         }
     }
+}
+
+// Add the ErrorMiddleware
+if ($config['site']['environment'] == 'debug') {
+    $errorMiddleware = $app->addErrorMiddleware(true, false, false);
+} else {
+    $errorMiddleware = $app->addErrorMiddleware(false, false, false);
 }
 
 
