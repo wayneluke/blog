@@ -1,0 +1,127 @@
+/* Reset and base styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --header-bg: #333333;
+    --header-text: #ffffff;
+    --logo-font-stack: "Permanent Marker", cursive;
+    --header-font-stack: "Gravitas One", serif;
+    --base-font-stack: "Poppins", sans-serif;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --header-bg: #1f1f1f;
+    --header-text: #ffffff;
+}
+
+[data-theme="light"] {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --header-bg: #333333;
+    --header-text: #ffffff;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+header,
+footer {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+}
+
+a {
+    text-decoration: none;
+    color: #0066cc;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header and Footer */
+header {
+    padding: 1rem;
+    grid-area: header;
+    font-family: var(--logo-font-stack);
+}
+
+footer {
+    padding: 1rem;
+    text-align: center;
+    grid-area: footer;
+    font-family: var(--base-font-stack)
+}
+
+/* Ensure theme variables apply across main content and sidebar */
+main,
+aside {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+header nav a {
+    margin-right: 1rem;
+    color: white;
+}
+
+/* Grid layout container */
+body > #page {
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "main sidebar"
+        "footer footer";
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    padding: 1rem;
+    min-height: 100vh;
+    font-family: var(--base-font-stack);
+}
+
+/* Assign grid areas */
+main {
+    grid-area: main;
+    padding: 0;
+}
+
+aside {
+    grid-area: sidebar;
+    padding: 1rem;
+    border-left: 1px solid #ddd;
+}
+
+footer {
+    grid-area: footer;
+}
+
+/* Responsive layout: single column */
+@media (max-width: 768px) {
+    body > #page {
+        grid-template-areas:
+            "header"
+            "main"
+            "sidebar"
+            "footer";
+        grid-template-columns: 1fr;
+    }
+
+    aside {
+        border-left: none;
+        border-top: 1px solid #ddd;
+    }
+}
