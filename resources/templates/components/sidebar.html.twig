@@ -1,0 +1,13 @@
+<div>
+    <h3>About</h3>
+    <p>Welcome to my blog! I'm glad you're here.</p>
+
+    <h3>Recent Posts</h3>
+    <ul>
+        {% for post in recent_posts %}
+            <li><a href="/post/{{ post.slug }}">{{ post.title }}</a></li>
+        {% else %}
+            <li>No recent posts.</li>
+        {% endfor %}
+    </ul>
+</div>
