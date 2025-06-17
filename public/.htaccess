@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Redirect to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Skip rewrite for common static file types
+RewriteCond %{REQUEST_URI} \.(?:jpg|jpeg|png|gif|bmp|webp|svg|ico|css|js|woff2?|ttf|eot|otf|map)$ [NC]
+RewriteRule ^ - [L]
+
+# Rewrite all other requests to index.php if not a real file or directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L, QSA]
