@@ -1,25 +1,17 @@
-<!doctype html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link href="/css/styles.css" rel="stylesheet">
-   <title>{{ item.title }} | Slim Framework Markdown Blog</title>
-</head>
-<body>
-{{ include('components/header.html.twig') }}
+{% extends 'components/base.html.twig' %}
+
+{% block title %}{{ site.title }}{% endblock %}
+
+{% block content %}
 
 <div class="content border-t-4 border-slate-700 pt-2 md:pt-6 mt-4">
    <h1 class="mb-0 pb-0">{{ item.title }}</h1>
     <p class="border-slate-700 font-bold mt-2 pt-0 pb-2 md:pb-2 mb-2">
-        By Matthew Setter, {{ item.publishDate|format_datetime(pattern="dd.MM.Y") }}
+        {{ item.author }}, {{ item.publishDate|format_datetime(pattern="dd.MM.Y") }}
     </p>
     <img src="/images/posts/{{ item.image }}" class="rounded-lg mb-4">
     <p class="synopsis">{{ item.synopsis }}</p>
     {{ item.content|raw }}
 </div>
-
-{{ include('components/footer.html.twig') }}
-
-</body>
-</html>
+    
+{% endblock %}

@@ -121,11 +121,11 @@ if (isset($config['links']) && is_array($config['links'])) {
 
         // Register only internal routes with a valid Twig template
         if (!preg_match('/^https?:\/\//i', $url) && !empty($template)) {
-            $app->map(['GET'], $url, function (Request $request, Response $response) use ($app, $template, $title) {
+            $app->map(['GET'], $url, function (Request $request, Response $response) use ($app, $template, $title, $config) {
                 $container = $app->getContainer();
                 $view = $container->get('view');
                 return $view->render($response, $template, [
-                    'title' => $title,
+                    'title' => $title,'site' => $config['site'],'links' => $config['links']
                 ]);
             });
         }
