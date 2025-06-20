@@ -24,7 +24,7 @@ class MarkdownFileFilterIterator extends \FilterIterator
             return false;
         }
 
-        if ($item->isDot() || !$item->isFile() || !$item->isReadable()) {
+        if ($item->isDir() || !$item->isFile() || !$item->isReadable()) {
             return false;
         }
 
